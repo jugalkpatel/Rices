@@ -19,8 +19,8 @@ import {
 } from "react-icons/io";
 import { MdNightsStay } from "react-icons/md";
 
-import logo from "../public/assets/LogoImg.png";
-import Avatar from "../public/assets/sample_avatar.svg";
+import logo from "@/assets/LogoImg.png";
+import Avatar from "@/assets/sample_avatar.svg";
 
 const useStyles = createStyles((theme) => ({
   border: {

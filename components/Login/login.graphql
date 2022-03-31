@@ -1,0 +1,14 @@
+mutation Login($email: String!, $password: String!) {
+  login(email: $email, password: $password) {
+    ... on AuthPayload {
+      token
+      user {
+        id
+        name
+      }
+    }
+    ... on AuthError {
+      message
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import { NavigationBar } from "./NavigationBar";
+import { NavigationBar } from "@/components/all";
 
 type Props = {
   children: JSX.Element | JSX.Element[];

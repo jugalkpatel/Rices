@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import { ApolloClient, ApolloProvider } from "@apollo/client";
 
 import {
   MantineProvider,
@@ -10,11 +10,16 @@ import {
 } from "@mantine/core";
 import { NotificationsProvider } from "@mantine/notifications";
 
-import { Layout } from "../components";
+import { Layout } from "@/components/all";
+import { cache } from "../cache";
+import { fetchFromLocalStorage } from "utils/fetchFromLocalStorage";
 
 const client = new ApolloClient({
   uri: "http://localhost:4000/",
-  cache: new InMemoryCache(),
+  cache,
+  headers: {
+    authrization: fetchFromLocalStorage("rices") || "",
+  },
 });
 
 function MyApp({ Component, pageProps }: AppProps) {

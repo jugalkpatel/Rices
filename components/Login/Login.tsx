@@ -1,58 +1,49 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { gql, useMutation } from "@apollo/client";
 import { useNotifications } from "@mantine/notifications";
+import { NotificationsContextProps } from "@mantine/notifications/lib/types";
 
 import {
   Modal,
-  Button,
   Group,
-  Title,
-  Text,
   InputWrapper,
   Input,
-  Anchor,
   PasswordInput,
-  Box,
+  Text,
+  Button,
+  Anchor,
+  Title,
 } from "@mantine/core";
-
-import Rocket from "../public/assets/rocket.svg";
-
-import { AuthError, AuthResponse } from "../types";
 import { IoMdClose } from "react-icons/io";
+import WavingHand from "@/assets/waving_hand.svg";
+
+import { useLoginMutation } from "./__generated__/login.generated";
+import saveToLocalStorage from "utils/saveToLocalStorage";
 
 type Props = {
   switchPage: () => void;
 };
 
 type FormValues = {
-  name: string;
   email: string;
   password: string;
 };
 
-const REGISTER_MUTATION = gql`
-  mutation Register($name: String!, $email: String!, $password: String!) {
-    register(name: $name, email: $email, password: $password) {
-      ... on AuthPayload {
-        __typename
-        token
-        user {
-          id
-          name
-        }
-      }
-      ... on AuthError {
-        __typename
-        message
-      }
-    }
-  }
-`;
+function showNotification(
+  msg: string,
+  notifications: NotificationsContextProps
+) {
+  notifications.showNotification({
+    message: msg,
+    icon: <IoMdClose />,
+    color: "red",
+  });
+}
 
-function Register({ switchPage }: Props) {
+function Login({ switchPage }: Props) {
   const router = useRouter();
+  const redirectToLogin = () => router.push("/access");
   const notifications = useNotifications();
   const [opened] = useState(true);
 
@@ -61,98 +52,79 @@ function Register({ switchPage }: Props) {
     register,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
-    defaultValues: { name: "", email: "", password: "" },
+    mode: "onBlur",
+    defaultValues: { email: "", password: "" },
   });
 
-  const [registerUser, { loading }] = useMutation<{
-    register: AuthResponse | AuthError;
-  }>(REGISTER_MUTATION, {
-    onCompleted: ({ register }) => {
-      console.log({ register });
-    },
-  });
+  const [loginUser, { loading }] = useLoginMutation();
 
   const onSubmit: SubmitHandler<FormValues> = async (values: FormValues) => {
-    console.log({ values });
-
     let message = "something went wrong!";
 
-    registerUser({
+    loginUser({
       variables: {
-        name: values.name,
         email: values.email,
         password: values.password,
       },
     })
-      .then((res) => {
-        const { data } = res;
+      .then((response) => {
+        const { data } = response;
 
-        if (data?.register && "token" in data.register) {
-          console.log(data.register);
+        if (data?.login && "token" in data.login) {
+          const isSaved = saveToLocalStorage("rices", data.login.token);
+
+          if (!isSaved) {
+            showNotification(
+              "failed to save item in the localstorage",
+              notifications
+            );
+            return;
+          }
+
+          // redirect user to the feed
+          router.push("/");
           return;
         }
 
-        if (data?.register && "message" in data.register) {
-          message = data.register.message;
+        // for known errors
+        if (data?.login && "message" in data.login) {
+          message = data.login.message;
         }
 
-        notifications.showNotification({
-          message,
-          icon: <IoMdClose />,
-          color: "red",
-        });
+        showNotification(message, notifications);
+        redirectToLogin();
       })
       .catch((err) => {
-        notifications.showNotification({
-          message,
-          icon: <IoMdClose />,
-          color: "red",
-        });
+        // for unknown errors
+        showNotification(message, notifications);
+        redirectToLogin();
       });
   };
 
   return (
     <>
-      <Modal opened={opened} onClose={() => router.back()} size="sm" centered>
+      <Modal opened={opened} size="sm" onClose={() => router.back()} centered>
         <Group direction="column" spacing="md" grow>
           <Group direction="column">
-            <Box sx={() => ({ height: "3rem", width: "3rem" })}>
-              <Rocket />
-            </Box>
+            <WavingHand />
 
-            <Title order={2}>Get Started</Title>
+            <Title order={2}>Welcome Back!</Title>
 
             <Group direction="row" spacing={5}>
-              <Text color="dimmmed">Already have an account?</Text>
+              <Text color="dimmmed">New to Rices?</Text>
               <Text
                 color="orange"
                 weight="700"
                 onClick={() => switchPage()}
-                sx={() => ({
-                  cursor: "pointer",
-                })}
+                sx={() => ({ cursor: "pointer" })}
               >
-                Login
+                Register
               </Text>
             </Group>
           </Group>
 
           <form onSubmit={handleSubmit(onSubmit)}>
             <Group direction="column" spacing="xl" grow>
-              <InputWrapper
-                id="name-input"
-                label="Name"
-                error={errors.name ? errors.name.message : null}
-              >
-                <Input
-                  id="name-input"
-                  placeholder="Type your name"
-                  {...register("name", {
-                    required: "Name is required",
-                  })}
-                />
-              </InputWrapper>
-
               <InputWrapper
                 id="email-input"
                 label="Email"
@@ -198,8 +170,8 @@ function Register({ switchPage }: Props) {
                 </Group>
 
                 <PasswordInput
-                  placeholder="Type your password"
-                  id="password-inpput"
+                  placeholder="Your password"
+                  id="password-input"
                   error={errors.password ? errors.password.message : null}
                   {...register("password", {
                     required: "Password is required",
@@ -216,7 +188,7 @@ function Register({ switchPage }: Props) {
               </div>
 
               <Button type="submit" loading={isSubmitting || loading}>
-                Register
+                Login
               </Button>
             </Group>
           </form>
@@ -226,4 +198,4 @@ function Register({ switchPage }: Props) {
   );
 }
 
-export { Register };
+export { Login };

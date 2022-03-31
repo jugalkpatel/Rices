@@ -1,8 +1,8 @@
 import type { NextPage } from "next";
 import { useState } from "react";
 
-import { AuthMode } from "../types";
-import { Login, Register } from "../components";
+import { AuthMode } from "@/types/";
+import { Login, Register } from "@/components/all";
 
 const Access: NextPage = () => {
   const [page, setPage] = useState<AuthMode>("LOGIN");

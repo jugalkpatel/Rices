@@ -1,0 +1,14 @@
+mutation Register($name: String!, $email: String!, $password: String!) {
+  register(name: $name, email: $email, password: $password) {
+    ... on AuthPayload {
+      token
+      user {
+        id
+        name
+      }
+    }
+    ... on AuthError {
+      message
+    }
+  }
+}
