@@ -21,7 +21,7 @@ import { IoMdClose } from "react-icons/io";
 import Rocket from "@/assets/rocket.svg";
 
 import { useRegisterMutation } from "./__generated__/register.generated";
-import saveToLocalStorage from "../../utils/saveToLocalStorage";
+import saveToLocalStorage from "@/utils/saveToLocalStorage";
 
 type Props = {
   switchPage: () => void;

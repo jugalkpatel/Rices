@@ -1,6 +1,8 @@
 function fetchFromLocalStorage(key: string): any {
   if (typeof window !== "undefined") {
-    return localStorage.getItem(JSON.parse(key));
+    const value = localStorage?.getItem(key);
+
+    return value ? JSON.parse(value) : undefined;
   }
 
   return undefined;

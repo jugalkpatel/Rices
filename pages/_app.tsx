@@ -12,13 +12,13 @@ import { NotificationsProvider } from "@mantine/notifications";
 
 import { Layout } from "@/components/all";
 import { cache } from "../cache";
-import { fetchFromLocalStorage } from "utils/fetchFromLocalStorage";
+import { fetchFromLocalStorage } from "@/utils/fetchFromLocalStorage";
 
 const client = new ApolloClient({
   uri: "http://localhost:4000/",
   cache,
   headers: {
-    authrization: fetchFromLocalStorage("rices") || "",
+    authrization: fetchFromLocalStorage("rices"),
   },
 });
 

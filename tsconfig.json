@@ -19,7 +19,8 @@
       "@/components/*": ["components/*"],
       "@/assets/*": ["public/assets/*"],
       "@/graphql-types/*": ["graphql/types.ts"],
-      "@/types/*": ["types.d.ts"]
+      "@/types/*": ["types.d.ts"],
+      "@/utils/*": ["utils/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],

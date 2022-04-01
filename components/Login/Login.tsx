@@ -19,7 +19,7 @@ import { IoMdClose } from "react-icons/io";
 import WavingHand from "@/assets/waving_hand.svg";
 
 import { useLoginMutation } from "./__generated__/login.generated";
-import saveToLocalStorage from "utils/saveToLocalStorage";
+import saveToLocalStorage from "@/utils/saveToLocalStorage";
 
 type Props = {
   switchPage: () => void;
