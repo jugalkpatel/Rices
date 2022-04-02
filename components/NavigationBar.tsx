@@ -44,9 +44,11 @@ function NavigationBar() {
       </Link>
 
       <Group>
-        <ActionIcon variant="outline" title="create post">
-          <IoMdAdd />
-        </ActionIcon>
+        <Link href="/submit" passHref>
+          <ActionIcon variant="outline" title="create post" component="a">
+            <IoMdAdd />
+          </ActionIcon>
+        </Link>
 
         <ActionIcon variant="outline" title="notifications">
           <IoMdNotifications />

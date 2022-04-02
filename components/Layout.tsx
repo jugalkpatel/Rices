@@ -28,7 +28,7 @@ function Layout({ children }: Props) {
   return (
     <>
       <NavigationBar />
-      <Stack justify="center">
+      <Stack justify="center" mt="lg">
         <Container className={classes.width}>{children}</Container>
       </Stack>
     </>
