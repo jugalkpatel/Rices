@@ -1,7 +1,14 @@
 import { useState } from "react";
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import { ApolloClient, ApolloProvider } from "@apollo/client";
+import {
+  ApolloClient,
+  ApolloProvider,
+  createHttpLink,
+  gql,
+  useQuery,
+} from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
 
 import {
   MantineProvider,
@@ -11,15 +18,32 @@ import {
 import { NotificationsProvider } from "@mantine/notifications";
 
 import { Layout } from "@/components/all";
-import { cache } from "../cache";
-import { fetchFromLocalStorage } from "@/utils/fetchFromLocalStorage";
+import { cache, setAuthorization, setUserId } from "../cache";
+import getAuthCredentials from "@/utils/getAuthCredentials";
+
+const httpLink = createHttpLink({
+  uri: "http://localhost:4000/",
+});
+
+const authLink = setContext((_, { headers }) => {
+  let authCredentials = getAuthCredentials();
+
+  return {
+    headers: {
+      ...headers,
+      authorization:
+        authCredentials && "token" in authCredentials
+          ? `Bearer ${authCredentials.token}`
+          : "",
+    },
+  };
+});
+
+console.log({ cache });
 
 const client = new ApolloClient({
-  uri: "http://localhost:4000/",
+  link: authLink.concat(httpLink),
   cache,
-  headers: {
-    authrization: fetchFromLocalStorage("rices"),
-  },
 });
 
 function MyApp({ Component, pageProps }: AppProps) {

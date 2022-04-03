@@ -19,7 +19,7 @@ import { IoMdClose } from "react-icons/io";
 import WavingHand from "@/assets/waving_hand.svg";
 
 import { useLoginMutation } from "./__generated__/login.generated";
-import saveToLocalStorage from "@/utils/saveToLocalStorage";
+import setAuthCredentials from "@/utils/setAuthCredentials";
 
 type Props = {
   switchPage: () => void;
@@ -70,10 +70,15 @@ function Login({ switchPage }: Props) {
       .then((response) => {
         const { data } = response;
 
-        if (data?.login && "token" in data.login) {
-          const isSaved = saveToLocalStorage("rices", data.login.token);
+        if (data?.login && data.login.__typename === "AuthPayload") {
+          const {
+            token,
+            user: { id, name },
+          } = data.login;
 
-          if (!isSaved) {
+          const isSavedInLocalStorage = setAuthCredentials({ token, id, name });
+
+          if (!isSavedInLocalStorage) {
             showNotification(
               "failed to save item in the localstorage",
               notifications
@@ -81,13 +86,11 @@ function Login({ switchPage }: Props) {
             return;
           }
 
-          // redirect user to the feed
           router.push("/");
           return;
         }
 
-        // for known errors
-        if (data?.login && "message" in data.login) {
+        if (data?.login && data.login.__typename === "AuthError") {
           message = data.login.message;
         }
 

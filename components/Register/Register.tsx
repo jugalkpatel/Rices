@@ -21,7 +21,7 @@ import { IoMdClose } from "react-icons/io";
 import Rocket from "@/assets/rocket.svg";
 
 import { useRegisterMutation } from "./__generated__/register.generated";
-import saveToLocalStorage from "@/utils/saveToLocalStorage";
+import setAuthCredentials from "@/utils/setAuthCredentials";
 
 type Props = {
   switchPage: () => void;
@@ -74,25 +74,28 @@ function Register({ switchPage }: Props) {
       .then((response) => {
         const { data } = response;
 
-        if (data?.register && "token" in data.register) {
-          // save token to the localstorage
-          const isSaved = saveToLocalStorage("rices", data.register.token);
+        if (data?.register && data.register.__typename === "AuthPayload") {
+          const {
+            token,
+            user: { id, name },
+          } = data.register;
 
-          if (!isSaved) {
+          const isSavedInLocalStorage = setAuthCredentials({ id, name, token });
+
+          if (!isSavedInLocalStorage) {
             showNotification(
-              "failed save item to the localstorage",
+              "failed to save item in localstorage",
               notifications
             );
             return;
           }
 
-          // redirect user to the feed
           router.push("/");
+
           return;
         }
 
-        // for known errors
-        if (data?.register && "message" in data.register) {
+        if (data?.register && data.register.__typename === "AuthError") {
           message = data.register.message;
         }
 
