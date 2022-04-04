@@ -22,7 +22,7 @@ import Rocket from "@/assets/rocket.svg";
 
 import { useRegisterMutation } from "./__generated__/register.generated";
 import setAuthCredentials from "@/utils/setAuthCredentials";
-
+import { setAuthorization, setUserId, setUserName } from "../../cache";
 type Props = {
   switchPage: () => void;
 };
@@ -81,6 +81,12 @@ function Register({ switchPage }: Props) {
           } = data.register;
 
           const isSavedInLocalStorage = setAuthCredentials({ id, name, token });
+
+          setAuthorization(true);
+
+          setUserId(id);
+
+          setUserName(name);
 
           if (!isSavedInLocalStorage) {
             showNotification(

@@ -20,6 +20,7 @@ import WavingHand from "@/assets/waving_hand.svg";
 
 import { useLoginMutation } from "./__generated__/login.generated";
 import setAuthCredentials from "@/utils/setAuthCredentials";
+import { setAuthorization, setUserId, setUserName } from "../../cache";
 
 type Props = {
   switchPage: () => void;
@@ -77,6 +78,12 @@ function Login({ switchPage }: Props) {
           } = data.login;
 
           const isSavedInLocalStorage = setAuthCredentials({ token, id, name });
+
+          setAuthorization(true);
+
+          setUserId(id);
+
+          setUserName(name);
 
           if (!isSavedInLocalStorage) {
             showNotification(
