@@ -50,3 +50,11 @@ export const setAuthorization = makeVar<boolean>(isLoggedIn);
 export const setUserId = makeVar<string>(id);
 
 export const setUserName = makeVar<string>(name);
+
+export function removeAuthCredentials(): void {
+  setAuthorization(false);
+
+  setUserId("");
+
+  setUserName("");
+}

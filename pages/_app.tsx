@@ -1,14 +1,15 @@
 import { useState } from "react";
 import type { AppProps } from "next/app";
 import Head from "next/head";
+import Router from "next/router";
 import {
   ApolloClient,
   ApolloProvider,
   createHttpLink,
-  gql,
-  useQuery,
+  from,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import { onError } from "@apollo/client/link/error";
 
 import {
   MantineProvider,
@@ -18,8 +19,24 @@ import {
 import { NotificationsProvider } from "@mantine/notifications";
 
 import { Layout } from "@/components/all";
-import { cache, setAuthorization, setUserId } from "../cache";
+import { cache, removeAuthCredentials } from "../cache";
 import getAuthCredentials from "@/utils/getAuthCredentials";
+import removeTokenFromLocalStorage from "@/utils/removeTokenFromLocalStorage";
+
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) {
+    graphQLErrors.forEach((err) => {
+      if (err.extensions.code === "TOKEN_EXPIRED") {
+        // remove token and logout
+        removeTokenFromLocalStorage();
+        removeAuthCredentials();
+
+        // redirect to login
+        Router.push("/access");
+      }
+    });
+  }
+});
 
 const httpLink = createHttpLink({
   uri: "http://localhost:4000/",
@@ -40,7 +57,7 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: from([errorLink, authLink, httpLink]),
   cache,
 });
 
