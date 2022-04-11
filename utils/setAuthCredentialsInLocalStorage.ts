@@ -1,6 +1,6 @@
 import { AuthCredentials } from "../types";
 
-function setAuthCredentials(value: AuthCredentials): boolean {
+function setAuthCredentialsInLocalStorage(value: AuthCredentials): boolean {
   if (typeof window !== "undefined") {
     localStorage?.setItem("rices", JSON.stringify(value));
 
@@ -10,4 +10,4 @@ function setAuthCredentials(value: AuthCredentials): boolean {
   return false;
 }
 
-export default setAuthCredentials;
+export default setAuthCredentialsInLocalStorage;

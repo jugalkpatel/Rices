@@ -19,8 +19,8 @@ import { IoMdClose } from "react-icons/io";
 import WavingHand from "@/assets/waving_hand.svg";
 
 import { useLoginMutation } from "./__generated__/login.generated";
-import setAuthCredentials from "@/utils/setAuthCredentials";
-import { setAuthorization, setUserId, setUserName } from "../../cache";
+import setAuthCredentialsInLocalStorage from "@/utils/setAuthCredentialsInLocalStorage";
+import { setAuthCredentials } from "../../cache";
 
 type Props = {
   switchPage: () => void;
@@ -77,13 +77,11 @@ function Login({ switchPage }: Props) {
             user: { id, name },
           } = data.login;
 
-          const isSavedInLocalStorage = setAuthCredentials({ token, id, name });
-
-          setAuthorization(true);
-
-          setUserId(id);
-
-          setUserName(name);
+          const isSavedInLocalStorage = setAuthCredentialsInLocalStorage({
+            token,
+            id,
+            name,
+          });
 
           if (!isSavedInLocalStorage) {
             showNotification(
@@ -92,6 +90,13 @@ function Login({ switchPage }: Props) {
             );
             return;
           }
+
+          // TODO: Replace following three lines with a function: setUserCredentials
+          setAuthCredentials({
+            authorization: true,
+            userId: id,
+            userName: name,
+          });
 
           router.push("/");
           return;

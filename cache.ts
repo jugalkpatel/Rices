@@ -13,17 +13,17 @@ export const cache: InMemoryCache = new InMemoryCache({
       fields: {
         isLoggedIn: {
           read() {
-            return setAuthorization();
+            return authorizationVar();
           },
         },
         id: {
           read() {
-            return setUserId();
+            return userIdVar();
           },
         },
         name: {
           read() {
-            return setUserName();
+            return userNameVar();
           },
         },
       },
@@ -45,16 +45,25 @@ function getUserCredentails(): UserCredentials {
 
 const { id, isLoggedIn, name } = getUserCredentails();
 
-export const setAuthorization = makeVar<boolean>(isLoggedIn);
+export const authorizationVar = makeVar<boolean>(isLoggedIn);
 
-export const setUserId = makeVar<string>(id);
+export const userIdVar = makeVar<string>(id);
 
-export const setUserName = makeVar<string>(name);
+export const userNameVar = makeVar<string>(name);
 
-export function removeAuthCredentials(): void {
-  setAuthorization(false);
+// TODO: make a function setUserCredentials
+export function setAuthCredentials({
+  authorization,
+  userId,
+  userName,
+}: {
+  authorization: boolean;
+  userId: string;
+  userName: string;
+}): void {
+  authorizationVar(authorization);
 
-  setUserId("");
+  userIdVar(userId);
 
-  setUserName("");
+  userNameVar(userName);
 }

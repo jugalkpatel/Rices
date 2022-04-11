@@ -19,7 +19,7 @@ import {
 import { NotificationsProvider } from "@mantine/notifications";
 
 import { Layout } from "@/components/all";
-import { cache, removeAuthCredentials } from "../cache";
+import { cache, setAuthCredentials } from "../cache";
 import getAuthCredentials from "@/utils/getAuthCredentials";
 import removeTokenFromLocalStorage from "@/utils/removeTokenFromLocalStorage";
 
@@ -29,7 +29,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
       if (err.extensions.code === "TOKEN_EXPIRED") {
         // remove token and logout
         removeTokenFromLocalStorage();
-        removeAuthCredentials();
+        setAuthCredentials({ authorization: false, userId: "", userName: "" });
 
         // redirect to login
         Router.push("/access");

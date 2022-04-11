@@ -21,8 +21,9 @@ import { IoMdClose } from "react-icons/io";
 import Rocket from "@/assets/rocket.svg";
 
 import { useRegisterMutation } from "./__generated__/register.generated";
-import setAuthCredentials from "@/utils/setAuthCredentials";
-import { setAuthorization, setUserId, setUserName } from "../../cache";
+import setAuthCredentialsInLocalStorage from "@/utils/setAuthCredentialsInLocalStorage";
+import { setAuthCredentials } from "../../cache";
+
 type Props = {
   switchPage: () => void;
 };
@@ -80,13 +81,18 @@ function Register({ switchPage }: Props) {
             user: { id, name },
           } = data.register;
 
-          const isSavedInLocalStorage = setAuthCredentials({ id, name, token });
+          const isSavedInLocalStorage = setAuthCredentialsInLocalStorage({
+            id,
+            name,
+            token,
+          });
 
-          setAuthorization(true);
-
-          setUserId(id);
-
-          setUserName(name);
+          // TODO: Replace following three lines with a function: setUserCredentials
+          setAuthCredentials({
+            authorization: true,
+            userId: id,
+            userName: name,
+          });
 
           if (!isSavedInLocalStorage) {
             showNotification(
